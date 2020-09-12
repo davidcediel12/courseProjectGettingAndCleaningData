@@ -1,3 +1,5 @@
+library(zip)
+library(dplyr)
 if(!file.exists("./data")){dir.create("./data")}
 
 if(!file.exists("./data/zipdata.zip")){
@@ -5,7 +7,7 @@ if(!file.exists("./data/zipdata.zip")){
       download.file(fileUrl, "./data/zipdata.zip")
 }
 
-library(zip)
+
 unzip("./data/zipdata.zip", exdir = "./data")
 
 #1. Merges the training and the test sets to create one data set.
@@ -22,9 +24,10 @@ train_y <- read.table("./data/UCI HAR Dataset/train/y_train.txt",
 
 
 bigX <- rbind(train_x, test_x)
+
 bigY <- rbind(train_y, test_y)
 
-dataset <- cbind(bigX, bigY)
+
 
 # for (i in ncol(dataset))
 #       dataset[, i] <- as.numeric(dataset[, i])
@@ -38,4 +41,31 @@ sd <- sapply(dataset, sd)
 
 
 #3. Uses descriptive activity names to name the activities in the data set
+
+changeNames <- function(number){
+      name = NULL
+      if(number == 1)
+            name = "walking"
+      else if(number == 2)
+            name = "walkingUpstairs"
+      else if(number == 3)
+            name = "walkingDownstairs"
+      else if(number == 4)
+            name = "sitting"
+      else if(number == 5)
+            name = "standing"
+      else if(number == 6)
+            name = "laying"
+      name
+}
+bigY <- sapply(bigY, changeNames)
+
+#Appropriately labels the data set with descriptive variable names.
+
+features_names <- read.table("./data/UCI HAR Dataset/features.txt")
+colnames(features_names) <- c("featureNumber", "featureName")
+names(features_names) <- c("featureName")
+
+features_names %>% features_names %>% mutate(featureName = str)
+dataset <- cbind(bigX, bigY)
 
