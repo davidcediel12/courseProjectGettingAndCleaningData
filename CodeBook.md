@@ -30,7 +30,7 @@ When the file is unzipped, there is a folder (UCI HAR Dataset) which contains a 
 
 6. *by_activity*: Contain the dataset grouped by activity
 
-## Tranformation s
+## Tranformations
 
 First, I merge the train X and train Y, and do the same with train Y and test Y.
 
