@@ -27,6 +27,7 @@ test_y <- read.table("./data/UCI HAR Dataset/test/y_test.txt",
 train_y <- read.table("./data/UCI HAR Dataset/train/y_train.txt", 
                       colClasses = "numeric")
 
+#In the end I merge X and Y to construct the big dataset
 
 bigX <- rbind(train_x, test_x)
 
@@ -69,7 +70,7 @@ bigY <- sapply(bigY$activity, changeNames)
 #       bigY[i, ] <- changeNames(bigY[i,])
 # }
 
-#Appropriately labels the data set with descriptive variable names.
+#4.Appropriately labels the data set with descriptive variable names.
 
 
 names(features_names) <- c("featureNumber", "featureName")
@@ -92,26 +93,17 @@ features_names <- features_names %>%
 names(bigX) <- features_names$featureName   
 
 
-#From the data set in step 4, creates a second, independent tidy data set 
+#5.From the data set in step 4, creates a second, independent tidy data set 
 #with the average of each variable for each activity and each subject
 
-#I don't know what mean 'each subject' but I going to make the other part
 
 activities <- factor(bigY)
-
-#Eliminating the unnecesary part of 'mean'
-themes <- lapply(features_names$featureName, strsplit, "mean")
-
-#Applying sapply two times because after one sapply, 
-#in ocassions the result in one position was "frequencybodygyro" "x"
-themes <- sapply(themes, function(X){X[1]})
-themes <- sapply(themes, function(X){X[1]})
-
-#Eliminating the unnecesary part of 'standarddeviation'
-themes <- lapply(themes, strsplit, "standarddeviation")
-themes <- sapply(themes, function(X){X[1]})
-themes <- sapply(themes, function(X){X[1]})
-
-
-#features_names %>% features_names %>% mutate(featureName = str)
 dataset <- cbind(bigX, bigY)
+dataset <- rename(dataset, activities = bigY)
+
+by_activity <- group_by(dataset, activities)
+
+means <- summarize_all(by_activity, mean)
+
+write.csv(dataset, file = "./data/bigDataset.csv")
+write.csv(means, file ="./data/means.csv")
