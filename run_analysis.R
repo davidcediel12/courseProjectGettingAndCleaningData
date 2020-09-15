@@ -1,14 +1,19 @@
 library(zip)
 library(dplyr)
+library(tibble)
+#Creating the 'data' folder
 if(!file.exists("./data")){dir.create("./data")}
 
+
+#Downloading and unzipping the data
 if(!file.exists("./data/zipdata.zip")){
       fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
       download.file(fileUrl, "./data/zipdata.zip")
+      unzip("./data/zipdata.zip", exdir = "./data")
 }
 
 
-unzip("./data/zipdata.zip", exdir = "./data")
+
 
 #1. Merges the training and the test sets to create one data set.
 test_x <- read.table("./data/UCI HAR Dataset/test/X_test.txt", 
@@ -29,19 +34,18 @@ bigY <- rbind(train_y, test_y)
 
 
 
-# for (i in ncol(dataset))
-#       dataset[, i] <- as.numeric(dataset[, i])
-write.csv(dataset, file = "./data/dataset.csv")
-
 #2 Extracts only the measurements on the mean and standard deviation 
 #for each measurement.
 
-mean <- colMeans(dataset)
-sd <- sapply(dataset, sd)
+features_names <- read.table("./data/UCI HAR Dataset/features.txt")
+#This name is only temporary, later I clean this names 
+colnames(bigX) <- features_names[, 2]
 
+bigX <- select(bigX, contains(c("mean()", "std()")))
 
 #3. Uses descriptive activity names to name the activities in the data set
 
+names(bigY) <- "activity"
 changeNames <- function(number){
       name = NULL
       if(number == 1)
@@ -58,14 +62,32 @@ changeNames <- function(number){
             name = "laying"
       name
 }
-bigY <- sapply(bigY, changeNames)
+
+bigY <- sapply(bigY$activity, changeNames)
+
+# for(i in seq(nrow(bigY))){
+#       bigY[i, ] <- changeNames(bigY[i,])
+# }
 
 #Appropriately labels the data set with descriptive variable names.
 
-features_names <- read.table("./data/UCI HAR Dataset/features.txt")
-colnames(features_names) <- c("featureNumber", "featureName")
-names(features_names) <- c("featureName")
 
-features_names %>% features_names %>% mutate(featureName = str)
+names(features_names) <- c("featureNumber", "featureName")
+
+#Making the names readable, eliminating special symbols and
+#abbreviations
+features_names <- features_names %>% 
+      filter(grepl("mean\\(\\)", featureName) | 
+             grepl("std\\(\\)", featureName)) %>%
+      mutate(featureName = gsub("-", "", featureName)) %>%
+      mutate(featureName = gsub("\\(\\)", "", featureName)) %>%
+      mutate(featureName = sub("^t", "time", featureName)) %>%
+      mutate(featureName = sub("Acc", "acceleration", featureName)) %>%
+      mutate(featureName = sub("std", "standarddeviation", featureName)) %>%
+      mutate(featureName = tolower(featureName))
+                  
+                  
+                  
+names(bigX) <- features_names$featureName   
+#features_names %>% features_names %>% mutate(featureName = str)
 dataset <- cbind(bigX, bigY)
-
