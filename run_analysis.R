@@ -21,6 +21,11 @@ test_x <- read.table("./data/UCI HAR Dataset/test/X_test.txt",
 train_x <- read.table("./data/UCI HAR Dataset/train/X_train.txt", 
                       colClasses = "numeric")
 
+subject_train <- read.table("./data/UCI HAR Dataset/train/subject_train.txt")
+subject_test <- read.table("./data/UCI HAR Dataset/test/subject_test.txt")
+
+
+bigSubject <- rbind(subject_train, subject_test)
 
 test_y <- read.table("./data/UCI HAR Dataset/test/y_test.txt", 
                      colClasses = "numeric")
@@ -66,9 +71,6 @@ changeNames <- function(number){
 
 bigY <- sapply(bigY$activity, changeNames)
 
-# for(i in seq(nrow(bigY))){
-#       bigY[i, ] <- changeNames(bigY[i,])
-# }
 
 #4.Appropriately labels the data set with descriptive variable names.
 
@@ -100,10 +102,12 @@ names(bigX) <- features_names$featureName
 activities <- factor(bigY)
 dataset <- cbind(bigX, bigY)
 dataset <- rename(dataset, activities = bigY)
+dataset <- mutate(dataset, subjects = bigSubject)
 
-by_activity <- group_by(dataset, activities)
 
-means <- summarize_all(by_activity, mean)
+
+by_activity_and_subject <- group_by(dataset, subjects, activities)
+means <- summarize_all(by_activity_and_subject, mean)
 
 write.csv(dataset, file = "./data/bigDataset.csv")
 write.csv(means, file ="./data/means.csv")
