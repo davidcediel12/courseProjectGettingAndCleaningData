@@ -82,6 +82,7 @@ features_names <- features_names %>%
       mutate(featureName = gsub("-", "", featureName)) %>%
       mutate(featureName = gsub("\\(\\)", "", featureName)) %>%
       mutate(featureName = sub("^t", "time", featureName)) %>%
+      mutate(featureName = sub("^f", "frequency", featureName)) %>%
       mutate(featureName = sub("Acc", "acceleration", featureName)) %>%
       mutate(featureName = sub("std", "standarddeviation", featureName)) %>%
       mutate(featureName = tolower(featureName))
@@ -89,5 +90,28 @@ features_names <- features_names %>%
                   
                   
 names(bigX) <- features_names$featureName   
+
+
+#From the data set in step 4, creates a second, independent tidy data set 
+#with the average of each variable for each activity and each subject
+
+#I don't know what mean 'each subject' but I going to make the other part
+
+activities <- factor(bigY)
+
+#Eliminating the unnecesary part of 'mean'
+themes <- lapply(features_names$featureName, strsplit, "mean")
+
+#Applying sapply two times because after one sapply, 
+#in ocassions the result in one position was "frequencybodygyro" "x"
+themes <- sapply(themes, function(X){X[1]})
+themes <- sapply(themes, function(X){X[1]})
+
+#Eliminating the unnecesary part of 'standarddeviation'
+themes <- lapply(themes, strsplit, "standarddeviation")
+themes <- sapply(themes, function(X){X[1]})
+themes <- sapply(themes, function(X){X[1]})
+
+
 #features_names %>% features_names %>% mutate(featureName = str)
 dataset <- cbind(bigX, bigY)
