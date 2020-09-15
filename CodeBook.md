@@ -18,17 +18,21 @@ When the file is unzipped, there is a folder (UCI HAR Dataset) which contains a 
 
 2. *test_x*, *train_x*, *test_y* and *train_y*: Dataframes that store the data which was reading from the .txt files in the data folder
 
-3. *bigX* and *bigY*: This variables are the result of merging the test and train data 
+3. *subject_test* and *subject_train*: Dataframe which contain the subjets
 
-4. *features_names*: Used for read *features.txt*, which contain the name of all variables of *X*, with that variable I can change the column names of X
+4. *bigSubject*: The result of merge subject_test and subject_train
 
-5. function *changeNames*: Used to map number -> activity for made descriptive names 
+5. *bigX* and *bigY*: This variables are the result of merging the test and train data 
 
-6. *activities*: Factor for split the dataset and can find the mean for every variable separated by activity
+6. *features_names*: Used for read *features.txt*, which contain the name of all variables of *X*, with that variable I can change the column names of X
 
-5. *means*: Contain the mean for every variable of *dataset* separated by activity
+7. function *changeNames*: Used to map number -> activity for made descriptive names 
 
-6. *by_activity*: Contain the dataset grouped by activity
+8. *activities*: Factor for split the dataset and can find the mean for every variable separated by activity
+
+9. *means*: Contain the mean for every variable of *dataset* separated by activity
+
+10. *by_activity_and_subject*: Contain the dataset grouped by activity and subject, with that I can calculate the mean
 
 ## Tranformations
 
