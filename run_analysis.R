@@ -101,13 +101,17 @@ names(bigX) <- features_names$featureName
 
 activities <- factor(bigY)
 dataset <- cbind(bigX, bigY)
+
 dataset <- rename(dataset, activities = bigY)
-dataset <- mutate(dataset, subjects = bigSubject)
+
+dataset <- mutate(dataset, subjects = bigSubject[, 1])
 
 
 
 by_activity_and_subject <- group_by(dataset, subjects, activities)
+
 means <- summarize_all(by_activity_and_subject, mean)
 
 write.csv(dataset, file = "./data/bigDataset.csv")
 write.csv(means, file ="./data/means.csv")
+write.table(means, file = "./data/means.txt", row.names = FALSE)
